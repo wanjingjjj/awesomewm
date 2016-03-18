@@ -554,7 +554,7 @@ awful.rules.rules = {
       properties = { tag = tags[1][6] } },
     { rule = { instance = "thunar" },
       properties = { tag = tags[1][5] } },
-    { rule = { class = "iceweasel" },
+    { rule = { class = "firefox" },
       properties = { tag = tags[1][3] } },
     { rule = { instance = "emacs" },
       properties = { tag = tags[1][2] } },
