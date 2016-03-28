@@ -228,8 +228,8 @@ end
 -- {{{ Tags
 -- Define a tag table which will hold all screen tags.
 tags = {
-  names  = { "1 term", "2 emacs", "3 www", "4 IDE", "5 Dired", "6 Office", 7, 8, 9 },
-  layout = { layouts[3], layouts[3], layouts[12], layouts[12], layouts[12],
+  names  = { "1 emacs", "2 www", "3 IDE", "4 Dired", "5 Office", 6, 7, 8, 9 },
+  layout = { layouts[3], layouts[12], layouts[12], layouts[12], layouts[12],
              layouts[12], layouts[12], layouts[12], layouts[12]
 }}
 for s = 1, screen.count() do
@@ -546,20 +546,16 @@ awful.rules.rules = {
     { rule = { class = "gimp" },
       properties = { floating = true } },
     -- Set Firefox to always map on tags number 3 of screen 1.
-    { rule = { instance = "wps" },
-      properties = { tag = tags[1][6] } },
-    { rule = { instance = "wpp" },
-      properties = { tag = tags[1][6] } },
-    { rule = { instance = "et" },
-      properties = { tag = tags[1][6] } },
     { rule = { instance = "thunar" },
-      properties = { tag = tags[1][5] } },
+      properties = { tag = tags[1][4] } },
     { rule = { class = "firefox" },
-      properties = { tag = tags[1][3] } },
-    { rule = { instance = "emacs" },
       properties = { tag = tags[1][2] } },
+    { rule = { instance = "emacs" },
+      properties = { tag = tags[1][1] } },
     { rule = { instance = "xterm" },
       properties = { tag = tags[1][1] } },
+    { rule = { class = "soffice.bin" },
+      properties = { tag = tags[1][5] } },
 
 }
 -- }}}
