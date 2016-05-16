@@ -446,7 +446,19 @@ globalkeys = awful.util.table.join(
                   awful.util.getdir("cache") .. "/history_eval")
               end),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end)
+    awful.key({ modkey }, "p", function() menubar.show() end),
+
+    -- client list
+    awful.key({ "Mod1",  }, "Tab", 
+              function() 
+                  awful.menu.clients({ theme = 
+                                              { width = 400 ,
+                                                height = 50 ,
+                                                border_color = "#00FF00"
+                                              }
+                                     })
+              end)
+
 )
 
 clientkeys = awful.util.table.join(
@@ -538,7 +550,9 @@ awful.rules.rules = {
                      size_hints_honor = false,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule = { class = "mpv" },
+    { rule = { class = "dia" },
+      properties = { floating = true } },
+    { rule = { class = "mplayer" },
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
