@@ -226,7 +226,7 @@ end
 -- {{{ Tags
 -- Define a tag table which will hold all screen tags.
 tags = {
-  names  = { "1 term", "2 emacs", "3 www", "4 IDE", "5 Dired", "6 Office", 7, 8, 9 },
+  names  = { 1, 2,3, 4, 5, 6, 7, 8, 9 },
   layout = { layouts[3], layouts[3], layouts[12], layouts[12], layouts[12],
              layouts[12], layouts[12], layouts[12], layouts[12]
 }}
@@ -448,6 +448,15 @@ globalkeys = awful.util.table.join(
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end),
 
+    -- rename tag
+    awful.key({ modkey, "Shift",  }, "r",    function ()
+                    awful.prompt.run({ prompt = "Rename tab: ", text = awful.tag.selected().name, },
+                    mypromptbox[mouse.screen].widget,
+                    function (s)
+                        awful.tag.selected().name = s
+                    end)
+            end),
+            
     -- client list
     awful.key({ "Mod1",  }, "Tab", 
               function() 
@@ -556,17 +565,19 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
+    { rule = { class = "inkscape" },
+      properties = { floating = true } },
     -- Set Firefox to always map on tags number 3 of screen 1.
-    { rule = { instance = "thunar" },
-      properties = { tag = tags[1][5] } },
-    { rule = { class = "firefox" },
-      properties = { tag = tags[1][3] } },
-    { rule = { instance = "emacs" },
-      properties = { tag = tags[1][2] } },
-    { rule = { instance = "xterm" },
-      properties = { tag = tags[1][1] } },
-    { rule = { class = "soffice.bin" },
-      properties = { tag = tags[1][6] } },
+--    { rule = { instance = "thunar" },
+--      properties = { tag = tags[1][5] } },
+--    { rule = { class = "firefox" },
+--      properties = { tag = tags[1][3] } },
+--    { rule = { instance = "emacs" },
+--      properties = { tag = tags[1][2] } },
+--    { rule = { instance = "xterm" },
+--      properties = { tag = tags[1][1] } },
+--    { rule = { class = "soffice.bin" },
+--      properties = { tag = tags[1][6] } },
 
 }
 -- }}}
