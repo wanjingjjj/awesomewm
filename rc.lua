@@ -459,13 +459,27 @@ globalkeys = awful.util.table.join(
             
     -- client list
     awful.key({ "Mod1",  }, "Tab", 
-              function() 
-                  awful.menu.clients({ theme = 
-                                              { width = 400 ,
-                                                height = 50 ,
-                                                border_color = "#00FF00"
-                                              }
-                                     })
+              function()
+
+                  terms = {}
+                  for i, c in pairs(awful.tag.selected():clients()) do
+                     terms[i] =
+                         { c.name,
+                           function()
+                               awful.tag.viewonly(c:tags()[1])
+                               client.focus = c
+                               end,
+                           c.icon
+                         }
+                  end
+                  style =
+                         { width = 400 ,
+                           height = 20 ,
+                           border_color = "#00FF00",
+                           bg_normal = "#FFFFFF",
+                           fg_normal = "#000000"
+                         }
+                  awful.menu({items = terms, theme = style}):show()
               end)
 
 )
