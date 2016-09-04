@@ -172,13 +172,13 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+beautiful.init("/home/wanjing/.config/awesome/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 -- terminal = "x-terminal-emulator"
--- terminal = "xterm"
-terminal = "xfce4-terminal"
-editor = os.getenv("EDITOR") or "editor"
+-- terminal = "urxvt"
+terminal = "urxvt"
+editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -216,24 +216,31 @@ end
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
--- tags = {}
--- for s = 1, screen.count() do
---     -- Each screen has its own tag table.
---     tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
--- end
+tags = {}
+for s = 1, screen.count() do
+   -- Each screen has its own tag table.
+   tag_list = {}
+   -- distribute tag numbers to screens
+   for i = 1, 9 do
+      if i % screen.count() + 1 == s then
+         table.insert(tag_list, i)
+      end
+   end
+   tags[s] = awful.tag(tag_list, s, layouts[3])
+end
 -- }}}
 
 -- {{{ Tags
 -- Define a tag table which will hold all screen tags.
-tags = {
-  names  = { 1, 2,3, 4, 5, 6, 7, 8, 9 },
-  layout = { layouts[3], layouts[3], layouts[12], layouts[12], layouts[12],
-             layouts[12], layouts[12], layouts[12], layouts[12]
-}}
-for s = 1, screen.count() do
-    -- Each screen has its own tag table.
-    tags[s] = awful.tag(tags.names, s, tags.layout)
-end
+-- tags = {
+--   names  = { "1 term", "2 emacs","3 www", "4", 5, 6, 7, 8, 9 },
+--  layout = { layouts[3], layouts[3], layouts[12], layouts[12], layouts[12],
+--             layouts[12], layouts[12], layouts[12], layouts[12]
+-- }}
+-- for s = 1, screen.count() do
+--     -- Each screen has its own tag table.
+--     tags[s] = awful.tag(tags.names, s, tags.layout)
+-- end
 -- }}}
 
 
@@ -430,8 +437,8 @@ globalkeys = awful.util.table.join(
 
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
     -- switch monitor
-    awful.key({modkey,            }, "F1",     function () awful.screen.focus(2) end),
-    awful.key({modkey,            }, "F2",     function () awful.screen.focus(1) end),
+    -- awful.key({modkey,            }, "F1",     function () awful.screen.focus(1) end),
+    -- awful.key({modkey,            }, "F2",     function () awful.screen.focus(2) end),
     -- shift client to another monitor
 --    awful.key({ modkey,           }, "o",      function(c) awful.client.movetoscreen(c,c.screen-1) end ),
 --    awful.key({ modkey,           }, "p",      function(c) awful.client.movetoscreen(c,c.screen+1) end ),
@@ -447,6 +454,10 @@ globalkeys = awful.util.table.join(
               end),
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end),
+
+    -- mod + c to copy & paste
+    -- Copy to clipboard
+    awful.key({ modkey }, "c", function () awful.util.spawn("xsel -p -o") end),
 
     -- rename tag
     awful.key({ modkey, "Shift",  }, "r",    function ()
@@ -507,22 +518,69 @@ clientkeys = awful.util.table.join(
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
+--for i = 1, 9 do
+--    globalkeys = awful.util.table.join(globalkeys,
+--        -- View tag only.
+--        awful.key({ modkey }, "#" .. i + 9,
+--                  function ()
+--                        local screen = mouse.screen
+--                        local tag = awful.tag.gettags(screen)[i]
+--                        if tag then
+--                           awful.tag.viewonly(tag)
+--                        end
+--                  end),
+--        -- Toggle tag.
+--        awful.key({ modkey, "Control" }, "#" .. i + 9,
+--                  function ()
+--                      local screen = mouse.screen
+--                      local tag = awful.tag.gettags(screen)[i]
+--                      if tag then
+--                         awful.tag.viewtoggle(tag)
+--                      end
+--                  end),
+--        -- Move client to tag.
+--        awful.key({ modkey, "Shift" }, "#" .. i + 9,
+--                  function ()
+--                      if client.focus then
+--                          local tag = awful.tag.gettags(client.focus.screen)[i]
+--                          if tag then
+--                              awful.client.movetotag(tag)
+--                          end
+--                     end
+--                  end),
+--        -- Toggle tag.
+--        awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
+--                  function ()
+--                      if client.focus then
+--                          local tag = awful.tag.gettags(client.focus.screen)[i]
+--                          if tag then
+--                              awful.client.toggletag(tag)
+--                          end
+--                      end
+--                  end))
+--end
+
 for i = 1, 9 do
+    local s = screen.count()
+    local screen = ( i % s ) + 1
+    local idx = math.ceil(i / s )
     globalkeys = awful.util.table.join(globalkeys,
         -- View tag only.
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
-                        local screen = mouse.screen
-                        local tag = awful.tag.gettags(screen)[i]
-                        if tag then
-                           awful.tag.viewonly(tag)
-                        end
+                      local tag = awful.tag.gettags(screen)[idx]
+                      --naughty.notify({ preset = naughty.config.presets.critical,
+                      --   title = "debug info",
+                      --   text = s })
+                      if tag then
+                         awful.screen.focus(screen)
+                         awful.tag.viewonly(tag)
+                      end
                   end),
         -- Toggle tag.
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
-                      local screen = mouse.screen
-                      local tag = awful.tag.gettags(screen)[i]
+                      local tag = awful.tag.gettags(screen)[idx]
                       if tag then
                          awful.tag.viewtoggle(tag)
                       end
@@ -531,7 +589,7 @@ for i = 1, 9 do
         awful.key({ modkey, "Shift" }, "#" .. i + 9,
                   function ()
                       if client.focus then
-                          local tag = awful.tag.gettags(client.focus.screen)[i]
+                          local tag = awful.tag.gettags(screen)[idx]
                           if tag then
                               awful.client.movetotag(tag)
                           end
@@ -541,13 +599,14 @@ for i = 1, 9 do
         awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
                   function ()
                       if client.focus then
-                          local tag = awful.tag.gettags(client.focus.screen)[i]
+                          local tag = awful.tag.gettags(screen)[idx]
                           if tag then
                               awful.client.toggletag(tag)
                           end
                       end
                   end))
 end
+
 
 clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
@@ -581,10 +640,14 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "inkscape" },
       properties = { floating = true } },
-    -- Set Firefox to always map on tags number 3 of screen 1.
 --    { rule = { instance = "thunar" },
---      properties = { tag = tags[1][5] } },
---    { rule = { class = "firefox" },
+--      properties = { tag = tags[1][4] } },
+--    { rule = { instance = "nautilus" },
+--      properties = { tag = tags[1][4] } },
+    -- Set Firefox to always map on tags number 3 of screen 1.
+--    { rule = { class = "Firefox" },
+--      properties = { tag = tags[1][3] } },
+--    { rule = { class = "chrome" },
 --      properties = { tag = tags[1][3] } },
 --    { rule = { instance = "emacs" },
 --      properties = { tag = tags[1][2] } },
@@ -683,3 +746,23 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- end
 -- client.connect_signal("request::activate", awful.ewmh.activate)
 -- }}}
+
+-- auto start some applications
+-- do
+--   local cmds =
+--   {
+--     "udiskie -2 -s",
+--     "easystroke enable",
+--     "ibus-daemon --xim -d",
+--     "nm-applet",
+--     "setxkbmap -option 'ctrl:nocaps'",
+--     "xterm",
+--     "xterm",
+--     "firefox",
+--     "emacs"
+--   }
+-- 
+--   for _,i in pairs(cmds) do
+--     awful.util.spawn(i)
+--   end
+-- end
