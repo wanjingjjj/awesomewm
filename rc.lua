@@ -172,13 +172,13 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/home/wanjing/.config/awesome/theme.lua")
+beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 -- terminal = "x-terminal-emulator"
 -- terminal = "urxvt"
-terminal = "urxvt"
-editor = os.getenv("EDITOR") or "vim"
+terminal = "xterm"
+editor = os.getenv("EDITOR") or "emacsclient"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -222,7 +222,7 @@ for s = 1, screen.count() do
    tag_list = {}
    -- distribute tag numbers to screens
    for i = 1, 9 do
-      if i % screen.count() + 1 == s then
+      if math.floor(i / math.ceil( 9 / screen.count())) + 1 == s then
          table.insert(tag_list, i)
       end
    end
@@ -518,52 +518,10 @@ clientkeys = awful.util.table.join(
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
---for i = 1, 9 do
---    globalkeys = awful.util.table.join(globalkeys,
---        -- View tag only.
---        awful.key({ modkey }, "#" .. i + 9,
---                  function ()
---                        local screen = mouse.screen
---                        local tag = awful.tag.gettags(screen)[i]
---                        if tag then
---                           awful.tag.viewonly(tag)
---                        end
---                  end),
---        -- Toggle tag.
---        awful.key({ modkey, "Control" }, "#" .. i + 9,
---                  function ()
---                      local screen = mouse.screen
---                      local tag = awful.tag.gettags(screen)[i]
---                      if tag then
---                         awful.tag.viewtoggle(tag)
---                      end
---                  end),
---        -- Move client to tag.
---        awful.key({ modkey, "Shift" }, "#" .. i + 9,
---                  function ()
---                      if client.focus then
---                          local tag = awful.tag.gettags(client.focus.screen)[i]
---                          if tag then
---                              awful.client.movetotag(tag)
---                          end
---                     end
---                  end),
---        -- Toggle tag.
---        awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
---                  function ()
---                      if client.focus then
---                          local tag = awful.tag.gettags(client.focus.screen)[i]
---                          if tag then
---                              awful.client.toggletag(tag)
---                          end
---                      end
---                  end))
---end
-
 for i = 1, 9 do
     local s = screen.count()
-    local screen = ( i % s ) + 1
-    local idx = math.ceil(i / s )
+    local screen = math.floor(i / math.ceil(9/s)) + 1
+    local idx = i - math.floor(9/s) * (screen -1)
     globalkeys = awful.util.table.join(globalkeys,
         -- View tag only.
         awful.key({ modkey }, "#" .. i + 9,
@@ -571,7 +529,7 @@ for i = 1, 9 do
                       local tag = awful.tag.gettags(screen)[idx]
                       --naughty.notify({ preset = naughty.config.presets.critical,
                       --   title = "debug info",
-                      --   text = s })
+                      --   text = idx })
                       if tag then
                          awful.screen.focus(screen)
                          awful.tag.viewonly(tag)
