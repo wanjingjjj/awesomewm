@@ -17,8 +17,8 @@ local awful = require("awful")
 
 local io = io
 local math = math
-local naughty = naughty
-local beautiful = beautiful
+local naughty = require("naughty")
+local beautiful = require("beautiful")
 local tonumber = tonumber
 local tostring = tostring
 local print = print
@@ -73,7 +73,7 @@ function batclosure (adapter)
         local battery, dir = get_bat_state(adapter)
         if dir == -1 then
             dirsign = "↓"
-            prefix = "Bat:"
+            prefix = ""
             if battery <= nextlim then
                 naughty.notify({title = "⚡ Beware! ⚡",
                             text = "Battery charge is low ( ⚡ "..battery.."%)!",
