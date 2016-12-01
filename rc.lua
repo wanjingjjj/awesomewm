@@ -375,6 +375,10 @@ root.buttons(awful.util.table.join(
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
 
+    -- screenshot
+    awful.key({ }, "Print", function ()
+        current_ts = os.date("%Y%m%d-%H%M%S")
+        awful.util.spawn("import "..current_ts..".png", false) end),
     -- multihead
     awful.key({ }, "XF86Display", xrandr),
     -- volume
@@ -435,12 +439,6 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
-    -- switch monitor
-    -- awful.key({modkey,            }, "F1",     function () awful.screen.focus(1) end),
-    -- awful.key({modkey,            }, "F2",     function () awful.screen.focus(2) end),
-    -- shift client to another monitor
---    awful.key({ modkey,           }, "o",      function(c) awful.client.movetoscreen(c,c.screen-1) end ),
---    awful.key({ modkey,           }, "p",      function(c) awful.client.movetoscreen(c,c.screen+1) end ),
     -- Prompt
     awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
@@ -690,18 +688,6 @@ end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
--- }}}
-
--- {{{ jump to new started client immediately
--- client.disconnect_signal("request::activate", awful.ewmh.activate)
--- function awful.ewmh.activate(c)
---    if c:isvisible() then
---        client.focus = c
---        c:raise()
---        client.urgent = true
---    end
--- end
--- client.connect_signal("request::activate", awful.ewmh.activate)
 -- }}}
 
 -- auto start some applications
