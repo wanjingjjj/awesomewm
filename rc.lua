@@ -185,9 +185,20 @@ awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
     set_wallpaper(s)
 
+    -- create a term tag with useless gap
+    if s.index == 1 then
+       awful.tag.add("1", {
+                        layout             = awful.layout.suit.fair,
+                        master_fill_policy = "master_width_factor",
+                        gap_single_client  = true,
+                        gap                = 1,
+                        screen             = s,
+       })
+    end
+    
     tag_list = {}
     -- distribute tag numbers to screens
-    for i = 1, 9 do
+    for i = 2, 9 do
       if math.floor(i / math.ceil( 9 / screen:count())) + 1 == s.index then
          table.insert(tag_list, i)
       end
@@ -197,20 +208,10 @@ awful.screen.connect_for_each_screen(function(s)
 --                      title = "debug",
 --                      text = tostring(screen:count()) })
 --     
-    awful.tag(tag_list, s, awful.layout.layouts[3])
+    awful.tag(tag_list, s, awful.layout.suit.fair)
     
     -- awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
 
-    if s.index == 1 then
-       awful.tag.add("1 Xterm", {
-                        layout             = awful.layout.suit.fair,
-                        master_fill_policy = "master_width_factor",
-                        gap_single_client  = true,
-                        gap                = 1,
-                        screen             = s,
-       })
-    end
-    
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
