@@ -1,8 +1,3 @@
--- Some imported library
-require("volume")
-require("caplock")
-require("battery")
-
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
@@ -46,8 +41,14 @@ end
 -- beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
 beautiful.init("/home/wanjing/.config/awesome/theme.lua")
 
+-- Some imported library
+require("volume")
+require("caplock")
+require("battery")
+
+
 -- This is used later as the default terminal and editor to run.
-terminal = "xterm"
+terminal = "urxvt"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -206,8 +207,8 @@ awful.screen.connect_for_each_screen(function(s)
 
 --     naughty.notify({ preset = naughty.config.presets.critical,
 --                      title = "debug",
---                      text = tostring(screen:count()) })
---     
+--                      text = tostring(s.index) })
+     
     awful.tag(tag_list, s, awful.layout.suit.fair)
     
     -- awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
@@ -272,7 +273,7 @@ globalkeys = awful.util.table.join(
     -- screenshot
     awful.key({ }, "Print", function ()
         current_ts = os.date("%Y%m%d-%H%M%S")
-        awful.util.spawn("import "..current_ts..".png", false) end),
+        awful.util.spawn("import /home/wanjing/"..current_ts..".png", false) end),
     -- multihead
     -- awful.key({ }, "XF86Display", xrandr),
     -- volume
