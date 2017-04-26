@@ -38,7 +38,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
--- beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
+-- beautiful.init(awful.util.get_themes_dir() .. "sky/theme.lua")
 beautiful.init("/home/wanjing/.config/awesome/theme.lua")
 
 -- Some imported library
@@ -48,7 +48,7 @@ require("battery")
 
 
 -- This is used later as the default terminal and editor to run.
-terminal = "terminator"
+terminal = "urxvt"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -186,32 +186,17 @@ awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
     set_wallpaper(s)
 
-    -- create a term tag with useless gap
-    if s.index == 1 then
-       awful.tag.add("1", {
-                        layout             = awful.layout.suit.fair,
-                        master_fill_policy = "master_width_factor",
-                        gap_single_client  = true,
-                        gap                = 1,
-                        screen             = s,
-       })
-    end
+--     tag_list = {}
+--     -- distribute tag numbers to screens
+--     for i = 1, 9 do
+--       if math.floor(i / math.ceil( 9 / screen:count())) + 1 == s.index then
+--          table.insert(tag_list, i)
+--       end
+--     end
+-- 
+--     awful.tag(tag_list, s, awful.layout.suit.fair)
     
-    tag_list = {}
-    -- distribute tag numbers to screens
-    for i = 2, 9 do
-      if math.floor(i / math.ceil( 9 / screen:count())) + 1 == s.index then
-         table.insert(tag_list, i)
-      end
-    end
-
---     naughty.notify({ preset = naughty.config.presets.critical,
---                      title = "debug",
---                      text = tostring(s.index) })
-     
-    awful.tag(tag_list, s, awful.layout.suit.fair)
-    
-    -- awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
+    awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[2])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -261,11 +246,26 @@ end)
 
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
-    awful.button({ }, 3, function () mymainmenu:toggle() end),
-    awful.button({ }, 4, awful.tag.viewnext),
-    awful.button({ }, 5, awful.tag.viewprev)
+    awful.button({ }, 3, function () mymainmenu:toggle() end)
+--    awful.button({ }, 4, awful.tag.viewnext),
+--    awful.button({ }, 5, awful.tag.viewprev)
 ))
 -- }}}
+
+local function rename_tag()
+    awful.prompt.run {
+        prompt       = "New tag name: ",
+        textbox      = awful.screen.focused().mypromptbox.widget,
+        exe_callback = function(new_name)
+            if not new_name or #new_name == 0 then return end
+
+            local t = awful.screen.focused().selected_tag
+            if t then
+               t.name = awful.tag.selected().name.." "..new_name
+            end
+        end
+    }
+end
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
@@ -289,6 +289,13 @@ globalkeys = awful.util.table.join(
     awful.key({ }, "XF86MonBrightnessUp", function ()
         awful.util.spawn("xbacklight -inc 10") end),
 
+    -- run or raise
+    awful.key({ modkey,           }, 'e', function ()
+          local matcher = function (c)
+             return awful.rules.matches(c, {class = 'emacs'})
+          end
+          awful.client.run_or_raise('emacs', matcher, true)
+    end),
    
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
@@ -374,6 +381,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
               {description = "run prompt", group = "launcher"}),
 
+    -- rename tag
+    awful.key({ modkey, "Shift"   }, "r", rename_tag,
+          {description = "rename the current tag", group = "tag"}),
+
     awful.key({ modkey }, "x",
               function ()
                   awful.prompt.run {
@@ -425,17 +436,17 @@ clientkeys = awful.util.table.join(
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
-   local s = screen:count()
-   local screen = math.floor(i / math.ceil(9/s)) + 1
-   local idx = i - math.floor(9/s) * (screen -1)
-   
+   -- local s = screen:count()
+   -- local screen = math.floor(i / math.ceil(9/s)) + 1
+   -- local idx = i - math.floor(9/s) * (screen -1)
+  
    globalkeys = awful.util.table.join(globalkeys,
         -- View tag only.
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
-                        -- local screen = awful.screen.focused()
-                        -- local tag = screen.tags[i]
-                        local tag = awful.tag.gettags(screen)[idx]
+                        local screen = awful.screen.focused()
+                        local tag = screen.tags[i]
+                        -- local tag = awful.tag.gettags(screen)[idx]
                         if tag then
                            awful.screen.focus(screen)
                            tag:view_only()
@@ -447,6 +458,7 @@ for i = 1, 9 do
                   function ()
                       local screen = awful.screen.focused()
                       local tag = screen.tags[i]
+                      -- local tag = awful.tag.gettags(screen)[idx]
                       if tag then
                          awful.tag.viewtoggle(tag)
                       end
@@ -457,6 +469,7 @@ for i = 1, 9 do
                   function ()
                       if client.focus then
                           local tag = client.focus.screen.tags[i]
+                          -- local tag = awful.tag.gettags(screen)[idx]
                           if tag then
                               client.focus:move_to_tag(tag)
                           end
@@ -468,6 +481,7 @@ for i = 1, 9 do
                   function ()
                       if client.focus then
                           local tag = client.focus.screen.tags[i]
+                          -- local tag = awful.tag.gettags(screen)[idx]
                           if tag then
                               client.focus:toggle_tag(tag)
                           end
@@ -608,4 +622,26 @@ end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+
+-- add useless gap
+--tag.connect_signal("property::layout",function(t)
+--                      clients = t:clients()
+--                      local l = awful.layout.get(mouse.screen.index)
+--                      if l == awful.layout.suit.max.fullscreen then
+--                         t.gap = 0
+--                      else
+--                         t.gap = 5
+--                      end
+--end)
+--
+--tag.connect_signal("property::selected", function(t)
+--    if t.layout == awful.layout.suit.max then
+--    elseif t.layout == awful.layout.suit.max.fullscreen then
+--      t.gap = 0
+--    else
+--      t.gap = 5
+--    end
+--  
+--end)
+
 -- }}}
