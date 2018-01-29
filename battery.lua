@@ -69,14 +69,14 @@ end
 function batclosure (adapter)
     local nextlim = limits[1][1]
     return function ()
-        local prefix = "⚡"
+        local prefix = "🔋"
         local battery, dir = get_bat_state(adapter)
         if dir == -1 then
             dirsign = "↓"
             prefix = ""
             if battery <= nextlim then
                 naughty.notify({title = "⚡ Beware! ⚡",
-                            text = "Battery charge is low ( ⚡ "..battery.."%)!",
+                            text = "🔋 Battery charge is low ( ⚡ "..battery.."%)!",
                             timeout = 7,
                             position = "bottom_right",
                             fg = beautiful.fg_focus,
